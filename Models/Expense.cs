@@ -1,0 +1,12 @@
+﻿namespace ExpenseApi.Models
+{
+    public class Expense
+    {
+        public int Id { get; set; }
+        public required string Description { get; set; }
+        public Category? Category { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+        public required User User { get; set; }
+    }
+}
