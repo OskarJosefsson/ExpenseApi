@@ -15,7 +15,6 @@ namespace ExpenseApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Add your services
             builder.Services.AddScoped<IExpenseRepo, ExpenseRepo>();
             builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
             builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -47,6 +46,7 @@ namespace ExpenseApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
             app.UseAuthorization();
