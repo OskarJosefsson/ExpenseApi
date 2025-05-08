@@ -1,0 +1,28 @@
+﻿This is supposed to be a receipt. Please analyze the text below and return all items in a JSON structure with the following fields:
+- each item's 'name' and 'cost'
+- total 'cost'
+- the 'shop name' (if available)
+- a 'category' for each item (such as Snacks, Beverages, Dairy, etc.)
+- a 'general category' for the whole receipt (like Food, Electronics, Household, etc.)
+
+The JSON should be formatted like this, and must be able to be deserialized into the following C# class structure:
+
+public class ChatGptReceipt
+{
+    public List<Item> Items { get; set; }
+    public decimal TotalCost { get; set; }
+    public string ShopName { get; set; }
+    public string ReceiptCategory { get; set; }
+}
+
+public class Item
+{
+    public string Name { get; set; }
+    public decimal Cost { get; set; }
+    public string Category { get; set; }
+}
+
+Receipt text:
+{imageText}
+
+Please ensure the output is **well-formed JSON** and contains **no extra text**. Only the JSON response should be returned.

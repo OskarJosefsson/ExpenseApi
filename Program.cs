@@ -2,6 +2,7 @@ using ExpenseApi.Services;
 using ExpenseApi.Data; 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ExpenseApi.Repositories;
 
 namespace ExpenseApi
 {
@@ -17,6 +18,12 @@ namespace ExpenseApi
 
             builder.Services.AddScoped<IExpenseRepo, ExpenseRepo>();
             builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+            builder.Services.AddScoped<IReceiptRepo, ReceiptRepo>();
+            builder.Services.AddScoped<IChatGippityService, ChatGippityService>();
+            builder.Services.AddScoped<IReceiptService, ReceiptService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IStoreService, StoreService>();
+            builder.Services.AddScoped<IImageService, ImageService>();
             builder.Services.AddScoped<IUserRepo, UserRepo>();
             builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
             builder.Services.AddScoped<DatabaseInit>();
