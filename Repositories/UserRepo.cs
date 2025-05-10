@@ -21,84 +21,24 @@ namespace ExpenseApi.Services
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<User> CreateUser(User user)
+        public Task<User> CreateUser(User user)
         {
-            using var connection = _connectionFactory.CreateConnection();
-
-            if (user.UserId == Guid.Empty)
-                throw new ArgumentException("UserId cannot be empty.", nameof(user.UserId));
-
-            var sql = @"
-                INSERT INTO Users (UserId, Name)
-                VALUES (@UserId, @Name);
-                SELECT * FROM Users WHERE UserId = @UserId;";
-
-            var parameters = new { user.UserId, user.Name };
-            var createdUser = await connection.QuerySingleOrDefaultAsync<User>(sql, parameters);
-
-            if (createdUser == null)
-                throw new InvalidOperationException("User creation failed.");
-
-            return createdUser;
+            return null;
         }
 
-        public async Task<User?> UpdateUser(Guid userId, User user)
+        public Task<bool> DeleteUser(Guid userId)
         {
-            if (userId == Guid.Empty)
-                throw new ArgumentException("UserId cannot be empty.", nameof(userId));
-
-            using var connection = _connectionFactory.CreateConnection();
-
-            var existingUser = await connection.QuerySingleOrDefaultAsync<User>(
-                "SELECT * FROM Users WHERE UserId = @UserId",
-                new { UserId = userId });
-
-            if (existingUser == null)
-                return null;
-
-            var sql = @"
-                UPDATE Users
-                SET Name = @Name
-                WHERE UserId = @UserId;
-                SELECT * FROM Users WHERE UserId = @UserId;";
-
-            var parameters = new { user.Name, UserId = userId };
-            var updatedUser = await connection.QuerySingleOrDefaultAsync<User>(sql, parameters);
-
-            return updatedUser;
+            throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteUser(Guid userId)
+        public Task<User?> GetByIdAsync(Guid userId)
         {
-            if (userId == Guid.Empty)
-                throw new ArgumentException("UserId cannot be empty.", nameof(userId));
-
-            using var connection = _connectionFactory.CreateConnection();
-
-            var existingUser = await connection.QuerySingleOrDefaultAsync<User>(
-                "SELECT * FROM Users WHERE UserId = @UserId",
-                new { UserId = userId });
-
-            if (existingUser == null)
-                return false;
-
-            var sql = "DELETE FROM Users WHERE UserId = @UserId;";
-            var rowsAffected = await connection.ExecuteAsync(sql, new { UserId = userId });
-
-            return rowsAffected > 0;
+            throw new NotImplementedException();
         }
 
-        public async Task<User?> GetByIdAsync(Guid userId)
+        public Task<User> UpdateUser(Guid userId, User user)
         {
-            if (userId == Guid.Empty)
-                throw new ArgumentException("UserId cannot be empty.", nameof(userId));
-
-            using var connection = _connectionFactory.CreateConnection();
-
-            var sql = "SELECT * FROM Users WHERE UserId = @UserId;";
-            var user = await connection.QuerySingleOrDefaultAsync<User>(sql, new { UserId = userId });
-
-            return user;
+            throw new NotImplementedException();
         }
     }
 }

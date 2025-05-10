@@ -3,6 +3,12 @@ using ExpenseApi.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ExpenseApi.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ExpenseApi.Identity;
+using ExpenseApi.Models;
+using Microsoft.Extensions.Options;
 
 namespace ExpenseApi
 {
@@ -11,10 +17,46 @@ namespace ExpenseApi
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
+            builder.Services.AddSingleton(resolver =>
+            resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key!)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy(IdentityData.AdminUserPolicyName, p => 
+                p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
+
+                options.AddPolicy(IdentityData.MemberUserPolicyName, p => 
+                p.RequireClaim(IdentityData.MemberUserClaimName, "true"));
+
+            });
 
             builder.Services.AddScoped<IExpenseRepo, ExpenseRepo>();
             builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
@@ -56,6 +98,7 @@ namespace ExpenseApi
 
             app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 

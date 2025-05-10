@@ -1,5 +1,6 @@
 ﻿using ExpenseApi.Models;
 using ExpenseApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static ExpenseApi.Models.Dtos.ChatGptReceipt;
 
@@ -24,9 +25,10 @@ using static ExpenseApi.Models.Dtos.ChatGptReceipt;
         _receiptService = receiptService;
     }
 
-    [HttpPost("upload")]
+        [HttpPost("upload")]
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
+        [Authorize]
         public async Task<IActionResult> CreateExpenseFromImage(IFormFile file, User user)
         {
             if (file == null || file.Length == 0)
