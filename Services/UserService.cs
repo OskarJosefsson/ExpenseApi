@@ -1,4 +1,5 @@
 ﻿using ExpenseApi.Models;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity.Data;
 
 namespace ExpenseApi.Services
@@ -6,7 +7,7 @@ namespace ExpenseApi.Services
 
     public interface IUserService
     {
-        Task<User> GetOrCreate(User request);
+        Task<User> GetOrCreateWithGoogle(GoogleJsonWebSignature.Payload payload);
     }
     public class UserService : IUserService
     {
@@ -17,20 +18,27 @@ namespace ExpenseApi.Services
         {
             _userRepo = userRepo;
         }
-
-        public async Task<User> GetOrCreate(User request)
+        public async Task<User> GetOrCreateWithGoogle(GoogleJsonWebSignature.Payload request)
         {
+            var existingUser = await _userRepo.GetByProviderIdAsync("Google", request.Subject);
 
-            var user = await _userRepo.GetByIdAsync(request.UserId);
+            if (existingUser != null)
+            {
+                return existingUser;
+            }
 
-            if(user != null)
+            var newUser = new User
             {
-                return user;
-            }
-            else
-            {
-                return await _userRepo.CreateUser(request);
-            }
+                UserId = Guid.NewGuid(),
+                Name = request.Name,
+                Email = request.Email,
+                AvatarUrl = request.Picture,
+                Provider = "Google",
+                ProviderUserId = request.Subject,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            return await _userRepo.CreateUser(newUser);
         }
     }
 }

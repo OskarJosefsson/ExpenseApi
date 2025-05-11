@@ -15,7 +15,7 @@ namespace ExpenseApi.Services
         private readonly ICategoryService _categoryService;
         private readonly IUserRepo _userRepo;
         private readonly IReceiptRepo _receiptRepo;
-        public ReceiptService(IStoreService storeService, ICategoryService categoryService, UserRepo userRepo, IReceiptRepo receiptRepo)
+        public ReceiptService(IStoreService storeService, ICategoryService categoryService, IUserRepo userRepo, IReceiptRepo receiptRepo)
         {
             _storeService = storeService;
             _categoryService = categoryService;

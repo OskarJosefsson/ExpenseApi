@@ -16,20 +16,38 @@ namespace ExpenseApi.Controllers
     {
         private readonly JwtSettings _jwtSettings;
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public AuthController(JwtSettings jwtSettings, IUserService userService)
+        public AuthController(JwtSettings jwtSettings, IUserService userService, IAuthService authService)
         {
             _jwtSettings = jwtSettings;
             _userService = userService;
+            _authService = authService;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] User model)
         {
-            if ( await _userService.GetOrCreate(model) != null && model.Email != null)
+            return Unauthorized();
+        }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+        {
+            var payload = await _authService.VerifyGoogleTokenAsync(request.Token);
+            if (payload == null)
+                return Unauthorized();
+
+            // Find or create user using payload info
+            var user = await _userService.GetOrCreateWithGoogle(payload);
+
+            if (user == null)
+                return Unauthorized();
+
+            if(user != null && !string.IsNullOrEmpty(user.Email))
             {
-                var token = GenerateJwtToken(model.Email);
-                return Ok(new { token });
+                var jwt = GenerateJwtToken(user.Email);
+                return Ok(new { token = jwt });
             }
 
             return Unauthorized();

@@ -10,6 +10,7 @@ namespace ExpenseApi.Services
         Task<User> UpdateUser(Guid userId, User user);
         Task<bool> DeleteUser(Guid userId);
         Task<User?> GetByIdAsync(Guid userId);
+        Task<User?> GetByProviderIdAsync(string v, string subject);
     }
 
     public class UserRepo : IUserRepo
@@ -21,11 +22,6 @@ namespace ExpenseApi.Services
             _connectionFactory = connectionFactory;
         }
 
-        public Task<User> CreateUser(User user)
-        {
-            return null;
-        }
-
         public Task<bool> DeleteUser(Guid userId)
         {
             throw new NotImplementedException();
@@ -34,6 +30,73 @@ namespace ExpenseApi.Services
         public Task<User?> GetByIdAsync(Guid userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<User?> GetByProviderIdAsync(string provider, string providerUserId)
+        {
+            const string sql = @"
+            SELECT UserId,
+                   Name,
+                   Email,
+                   AvatarUrl,
+                   Provider,
+                   ProviderUserId,
+                   Type,
+                   CreatedAt,
+                   LastLogin
+              FROM Users
+             WHERE Provider = @Provider
+               AND ProviderUserId = @ProviderUserId;
+        ";
+
+            using var conn = _connectionFactory.CreateConnection();
+            return await conn.QuerySingleOrDefaultAsync<User>(
+                sql,
+                new { Provider = provider, ProviderUserId = providerUserId }
+            );
+        }
+
+        public async Task<User> CreateUser(User user)
+        {
+            const string sql = @"
+            INSERT INTO Users (
+                UserId,
+                Name,
+                Email,
+                AvatarUrl,
+                Provider,
+                ProviderUserId,
+                Type,
+                CreatedAt,
+                LastLogin
+            ) VALUES (
+                @UserId,
+                @Name,
+                @Email,
+                @AvatarUrl,
+                @Provider,
+                @ProviderUserId,
+                @Type,
+                @CreatedAt,
+                @LastLogin
+            );
+        ";
+
+            using var conn = _connectionFactory.CreateConnection();
+            await conn.ExecuteAsync(sql, new
+            {
+                user.UserId,
+                user.Name,
+                user.Email,
+                user.AvatarUrl,
+                user.Provider,
+                user.ProviderUserId,
+                user.Type,
+                user.CreatedAt,
+                user.LastLogin
+            });
+
+            return user;
         }
 
         public Task<User> UpdateUser(Guid userId, User user)

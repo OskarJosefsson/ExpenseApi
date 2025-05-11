@@ -22,6 +22,10 @@ namespace ExpenseApi
             builder.Services.AddSingleton(resolver =>
             resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
 
+            builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("Google"));
+            builder.Services.AddSingleton(sp =>
+                sp.GetRequiredService<IOptions<GoogleSettings>>().Value);
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
