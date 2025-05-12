@@ -62,6 +62,8 @@ namespace ExpenseApi
 
             });
 
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IExpenseRepo, ExpenseRepo>();
             builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
             builder.Services.AddScoped<IReceiptRepo, ReceiptRepo>();
@@ -79,7 +81,9 @@ namespace ExpenseApi
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
-                        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                        policy.WithOrigins("http://localhost:5173")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
                     });
             });
 

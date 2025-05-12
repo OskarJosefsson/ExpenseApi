@@ -20,25 +20,29 @@ namespace ExpenseApi.Services
         }
         public async Task<User> GetOrCreateWithGoogle(GoogleJsonWebSignature.Payload request)
         {
-            var existingUser = await _userRepo.GetByProviderIdAsync("Google", request.Subject);
 
-            if (existingUser != null)
+            var existingUser =  await _userRepo.GetByProviderIdAsync("Google", request.Subject);
+
+            if(existingUser != null)
             {
                 return existingUser;
             }
-
-            var newUser = new User
+            else
             {
-                UserId = Guid.NewGuid(),
-                Name = request.Name,
-                Email = request.Email,
-                AvatarUrl = request.Picture,
-                Provider = "Google",
-                ProviderUserId = request.Subject,
-                CreatedAt = DateTime.UtcNow
-            };
+                var newUser = new User
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    AvatarUrl = request.Picture,
+                    Provider = "Google",
+                    ProviderUserId = request.Subject,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-            return await _userRepo.CreateUser(newUser);
+                return await _userRepo.CreateUser(newUser);
+            }
+
+
         }
     }
 }

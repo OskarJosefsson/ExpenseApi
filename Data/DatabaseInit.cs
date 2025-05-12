@@ -52,10 +52,19 @@ namespace ExpenseApi.Data
 
             var createUsersTableSql = @"
             IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Users' AND xtype='U')
+            BEGIN
             CREATE TABLE Users (
             UserId UNIQUEIDENTIFIER PRIMARY KEY,
-            Name NVARCHAR(100) NULL
-            );";
+            Name NVARCHAR(100) NULL,
+            Email NVARCHAR(256) NULL,
+            AvatarUrl NVARCHAR(500) NULL,
+            Provider NVARCHAR(100) NOT NULL,
+            ProviderUserId NVARCHAR(256) NOT NULL,
+            Type NVARCHAR(50) NOT NULL DEFAULT 'Standard',
+            CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+            LastLogin DATETIME2 NULL
+            );
+            END";
 
             var insertCategoriesSql = @"
         IF NOT EXISTS (SELECT 1 FROM Categories WHERE Title = 'Groceries')

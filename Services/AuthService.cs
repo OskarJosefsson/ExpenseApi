@@ -28,7 +28,7 @@ namespace ExpenseApi.Services
                 var payload = await GoogleJsonWebSignature.ValidateAsync(token, validationSettings);
                 return payload;
             }
-            catch (InvalidJwtException)
+            catch (InvalidJwtException ex)
             {
                 return null;
             }

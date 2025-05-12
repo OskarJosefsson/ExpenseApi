@@ -71,7 +71,17 @@ namespace ExpenseApi.Controllers
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            try
+            {
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+
+
         }
     }
 }
