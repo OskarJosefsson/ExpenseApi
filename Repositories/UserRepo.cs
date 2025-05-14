@@ -11,6 +11,8 @@ namespace ExpenseApi.Services
         Task<bool> DeleteUser(Guid userId);
         Task<User?> GetByIdAsync(Guid userId);
         Task<User?> GetByProviderIdAsync(string v, string subject);
+
+        Task<IEnumerable<ReceiptUsers>> GetUsersByReceiptAsync(Guid receiptId);
     }
 
     public class UserRepo : IUserRepo
@@ -54,6 +56,19 @@ namespace ExpenseApi.Services
                 sql,
                 new { Provider = provider, ProviderUserId = providerUserId }
             );
+        }
+
+        public async Task<IEnumerable<ReceiptUsers>> GetUsersByReceiptAsync(Guid receiptId)
+        {
+            var sql = @"
+        SELECT * FROM ReceiptUsers
+        WHERE ReceiptId = @ReceiptId";
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var result = await connection.QueryAsync<ReceiptUsers>(sql, new { ReceiptId = receiptId });
+                return result;
+            }
         }
 
         public async Task<User> CreateUser(User user)

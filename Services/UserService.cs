@@ -25,7 +25,9 @@ namespace ExpenseApi.Services
 
             if(existingUser != null)
             {
+
                 return existingUser;
+
             }
             else
             {
@@ -41,8 +43,6 @@ namespace ExpenseApi.Services
 
                 return await _userRepo.CreateUser(newUser);
             }
-
-
         }
     }
 }

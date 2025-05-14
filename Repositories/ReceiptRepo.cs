@@ -11,6 +11,8 @@ namespace ExpenseApi.Repositories
         Task CreateAsync(Receipt receipt);
         Task UpdateAsync(Receipt receipt);
         Task DeleteAsync(Guid id);
+        Task AddReceiptUserAsync(Guid userId, Guid receiptId, int percentage);
+        Task<IEnumerable<ReceiptUsers>> GetReceiptsByUserAsync(Guid userId);
 
     }
 
@@ -70,6 +72,32 @@ namespace ExpenseApi.Repositories
                 CategoryId = receipt.Category?.Id,
                 UserId = receipt.User?.UserId
             });
+        }
+
+        public async Task AddReceiptUserAsync(Guid userId, Guid receiptId, int percentage)
+        {
+            var sql = @"
+        IF NOT EXISTS (SELECT 1 FROM ReceiptUsers WHERE UserId = @UserId AND ReceiptId = @ReceiptId)
+        INSERT INTO ReceiptUsers (UserId, ReceiptId, Percentage)
+        VALUES (@UserId, @ReceiptId, @Percentage)";
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                await connection.ExecuteAsync(sql, new { UserId = userId, ReceiptId = receiptId, Percentage = percentage });
+            }
+        }
+
+        public async Task<IEnumerable<ReceiptUsers>> GetReceiptsByUserAsync(Guid userId)
+        {
+            var sql = @"
+        SELECT * FROM ReceiptUsers
+        WHERE UserId = @UserId";
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var result = await connection.QueryAsync<ReceiptUsers>(sql, new { UserId = userId });
+                return result;
+            }
         }
 
         public async Task DeleteAsync(Guid id)
