@@ -38,7 +38,6 @@ namespace ExpenseApi.Controllers
             if (payload == null)
                 return Unauthorized();
 
-            // Find or create user using payload info
             var user = await _userService.GetOrCreateWithGoogle(payload);
 
             if (user == null)

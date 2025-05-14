@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ExpenseApi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-using Microsoft.AspNetCore.Mvc;
+﻿
+    using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -104,4 +98,4 @@ using Microsoft.AspNetCore.Mvc;
         }
     }
 
-}
+

@@ -44,5 +44,10 @@ namespace ExpenseApi.Services
                 return await _userRepo.CreateUser(newUser);
             }
         }
+
+        public async Task<User> GetCurrentUserAsync(Guid userId)
+        {
+            return await _userRepo.GetByIdAsync(userId);
+        }
     }
 }

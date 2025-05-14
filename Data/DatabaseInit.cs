@@ -105,12 +105,12 @@ CREATE TABLE ReceiptItems (
     );";
 
             var createUserReceiptTableSql = @"CREATE TABLE ReceiptUsers (
-    UserId UNIQUEIDENTIFIER NOT NULL,  -- Foreign key to Users table
-    ReceiptId UNIQUEIDENTIFIER NOT NULL,  -- Foreign key to Receipts table
-    Percentage INT NOT NULL,  -- The percentage associated with this relationship
-    PRIMARY KEY (UserId, ReceiptId),  -- Composite primary key
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,  -- Assuming Users table has Id as primary key
-    FOREIGN KEY (ReceiptId) REFERENCES Receipts(Id) ON DELETE CASCADE  -- Assuming Receipts table has Id as primary key
+    UserId UNIQUEIDENTIFIER NOT NULL, 
+    ReceiptId UNIQUEIDENTIFIER NOT NULL,  
+    Percentage INT NOT NULL,  
+    PRIMARY KEY (UserId, ReceiptId),
+    FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE, 
+    FOREIGN KEY (ReceiptId) REFERENCES Receipts(Id) ON DELETE CASCADE 
 );";
 
 
