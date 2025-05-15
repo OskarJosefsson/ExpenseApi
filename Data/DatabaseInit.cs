@@ -104,7 +104,7 @@ CREATE TABLE ReceiptItems (
         Name NVARCHAR(255) NOT NULL
     );";
 
-            var createUserReceiptTableSql = @"CREATE TABLE ReceiptUsers (
+            var createUserReceiptTableSql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ReceiptUsers' AND xtype='U') CREATE TABLE ReceiptUsers (
     UserId UNIQUEIDENTIFIER NOT NULL, 
     ReceiptId UNIQUEIDENTIFIER NOT NULL,  
     Percentage INT NOT NULL,  

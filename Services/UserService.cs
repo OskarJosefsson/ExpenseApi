@@ -45,6 +45,60 @@ namespace ExpenseApi.Services
             }
         }
 
+        public async Task<User> GetOrCreateWithMeta(GoogleJsonWebSignature.Payload request)
+        {
+
+            var existingUser = await _userRepo.GetByProviderIdAsync("Google", request.Subject);
+
+            if (existingUser != null)
+            {
+
+                return existingUser;
+
+            }
+            else
+            {
+                var newUser = new User
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    AvatarUrl = request.Picture,
+                    Provider = "Google",
+                    ProviderUserId = request.Subject,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                return await _userRepo.CreateUser(newUser);
+            }
+        }
+
+        public async Task<User> GetOrCreateWithMicrosoft(GoogleJsonWebSignature.Payload request)
+        {
+
+            var existingUser = await _userRepo.GetByProviderIdAsync("Google", request.Subject);
+
+            if (existingUser != null)
+            {
+
+                return existingUser;
+
+            }
+            else
+            {
+                var newUser = new User
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    AvatarUrl = request.Picture,
+                    Provider = "Google",
+                    ProviderUserId = request.Subject,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                return await _userRepo.CreateUser(newUser);
+            }
+        }
+
         public async Task<User> GetCurrentUserAsync(Guid userId)
         {
             return await _userRepo.GetByIdAsync(userId);
