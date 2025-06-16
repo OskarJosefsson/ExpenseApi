@@ -1,17 +1,19 @@
 ﻿using ExpenseApi.Models;
+using ExpenseApi.Models.Dtos;
 using ExpenseApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static ExpenseApi.Models.Dtos.ChatGptReceipt;
 
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ImageController : ControllerBase
-    {
-        private readonly string _imagePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedImages");
-        private readonly IChatGippityService _chatGippityService;
-        private readonly IImageService _imageService;
-        private readonly IReceiptService _receiptService;
+[Route("api/[controller]")]
+[ApiController]
+public class ImageController : ControllerBase
+{
+    private readonly string _imagePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedImages");
+    private readonly IChatGippityService _chatGippityService;
+    private readonly IImageService _imageService;
+    private readonly IReceiptService _receiptService;
+    private readonly IUserService _userService;
 
     public ImageController(IChatGippityService chatGippityService, IImageService imageService, IReceiptService receiptService)
     {
@@ -25,18 +27,27 @@ using static ExpenseApi.Models.Dtos.ChatGptReceipt;
         _receiptService = receiptService;
     }
 
-        [HttpPost("upload")]
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
-        [Authorize]
-        public async Task<IActionResult> CreateExpenseFromImage(IFormFile file, User user)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file uploaded.");
-            }
+    public ImageController(string imagePath, IChatGippityService chatGippityService, IImageService imageService, IReceiptService receiptService, IUserService userService)
+    {
+        _imagePath = imagePath;
+        _chatGippityService = chatGippityService;
+        _imageService = imageService;
+        _receiptService = receiptService;
+        _userService = userService;
+    }
 
-        var imageUrl = await _imageService.UploadImageAsync(file);
+    [HttpPost("upload")]
+    [Consumes("multipart/form-data")]
+    [Produces("application/json")]
+    [AllowAnonymous] 
+    public async Task<IActionResult> CreateExpenseFromImage([FromForm] UploadExpenseRequestDto request, [FromHeader] string userId)
+    {
+        if (request.File == null || request.File.Length == 0)
+        {
+            return BadRequest("No file uploaded.");
+        }
+
+        var imageUrl = await _imageService.UploadImageAsync(request.File);
 
         var words = await _imageService.ExtractTextFromImageAsync(imageUrl.ToString());
 
@@ -44,10 +55,10 @@ using static ExpenseApi.Models.Dtos.ChatGptReceipt;
 
         var receipt = _receiptService.ConvertToReceipt(response);
 
+        var user = await _userService.GetUserById(userId);
         receipt = await _receiptService.AddReceipt(user, receipt);
 
         return Ok(new { Receipt = receipt });
-
-        }
     }
+}
 

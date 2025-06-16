@@ -8,6 +8,7 @@ namespace ExpenseApi.Services
     public interface IUserService
     {
         Task<User> GetOrCreateWithGoogle(GoogleJsonWebSignature.Payload payload);
+        Task<User> GetUserById(string userId);
     }
     public class UserService : IUserService
     {
@@ -102,6 +103,11 @@ namespace ExpenseApi.Services
         public async Task<User> GetCurrentUserAsync(Guid userId)
         {
             return await _userRepo.GetByIdAsync(userId);
+        }
+
+        public Task<User> GetUserById(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
