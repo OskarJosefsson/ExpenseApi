@@ -15,7 +15,7 @@ public class ImageController : ControllerBase
     private readonly IReceiptService _receiptService;
     private readonly IUserService _userService;
 
-    public ImageController(IChatGippityService chatGippityService, IImageService imageService, IReceiptService receiptService)
+    public ImageController(IChatGippityService chatGippityService, IImageService imageService, IReceiptService receiptService, IUserService userService)
     {
         if (!Directory.Exists(_imagePath))
         {
@@ -25,16 +25,9 @@ public class ImageController : ControllerBase
         _chatGippityService = chatGippityService;
         _imageService = imageService;
         _receiptService = receiptService;
-    }
-
-    public ImageController(string imagePath, IChatGippityService chatGippityService, IImageService imageService, IReceiptService receiptService, IUserService userService)
-    {
-        _imagePath = imagePath;
-        _chatGippityService = chatGippityService;
-        _imageService = imageService;
-        _receiptService = receiptService;
         _userService = userService;
     }
+
 
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
