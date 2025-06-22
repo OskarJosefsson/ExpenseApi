@@ -22,7 +22,7 @@ namespace ExpenseApi.Services
 
         public async Task<ChatGptReceipt> AnalyzeReceiptImage(string imageText)
         {
-            var prompt = GetPrompt("ReceiptPrompt.txt");
+            var prompt = GetPrompt("AnalyzeReceipt.txt");
             prompt = LoadPrompt(prompt, imageText, "{imageText}");
 
             var response = await SendRequestAsync(prompt);
